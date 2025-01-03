@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Mobs
+  - Rock
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Player
   - Mob
   - Exp
-  - 
+  - Rock
   - 
   - 
   - 

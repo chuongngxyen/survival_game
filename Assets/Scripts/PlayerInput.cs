@@ -23,4 +23,11 @@ public class PlayerInput : MonoBehaviour
         float value = playerInputActions.Player.NormalAttack.ReadValue<float>();
         return value;
     }
+
+    public float GetSettingButton()
+    {
+        float value = playerInputActions.Player.Setting.ReadValue<float>();
+        return value;
+
+    }
 }

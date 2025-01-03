@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -26,6 +27,8 @@ public class Player : MonoBehaviour
     private bool isOnTheGround = true;
     private bool isWalking = false;
     private bool isJumping = false;
+    string[] groundTags = { "Ground", "Rock" };
+
 
     private bool isAlreadyAttack01 = false;
     private bool isAlreadyAttack04 = false;
@@ -80,7 +83,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Ground")
+        if (groundTags.Contains(collision.gameObject.tag))
         {
             isOnTheGround = true;
             isJumping = false;
@@ -93,7 +96,7 @@ public class Player : MonoBehaviour
         if (playerInput.GetAttackButton() == 1 && !isAlreadyAttack01)
         {
             isAlreadyAttack01 = true;
-            HandleSkill("01", isAlreadyAttack01,
+            HandleSkill("01",
             (transform.position + transform.forward) + attackSpherePosition1,
             attackHitbox1);
             yield return new WaitForSeconds(attackDelay);
@@ -108,18 +111,17 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E) && !isAlreadyAttack04)
         {
             isAlreadyAttack04 = true;
-            HandleSkill("04", isAlreadyAttack04, transform.position, attackHitbox4);
+            HandleSkill("04", transform.position, attackHitbox4);
             yield return new WaitForSeconds(attackDelay);
             if (isAlreadyAttack04)
             {
                 isAlreadyAttack04 = false;
-
             }
         }
     }
 
 
-    private void HandleSkill(string skillName, bool isAlreadyAttack, Vector3 position, float hitBoxRadius)
+    private void HandleSkill(string skillName, Vector3 position, float hitBoxRadius)
     {
             animator.SetTrigger(IS_ATTACKING + skillName);
 
@@ -141,6 +143,7 @@ public class Player : MonoBehaviour
         Vector3 movementVector = playerInput.GetMovementVectorNormalized();
 
         Vector3 moveDir = Quaternion.Euler(0f, cam.eulerAngles.y, 0f) * new Vector3(movementVector.x, 0f, movementVector.y);
+
         if (Input.GetKey(KeyCode.Space) && isOnTheGround)
         {
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
@@ -154,8 +157,6 @@ public class Player : MonoBehaviour
         float rotationSpeed = 10f;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotationSpeed);
     }
-
-  
 
     private void HandleAnimator()
     {
@@ -182,9 +183,14 @@ public class Player : MonoBehaviour
         healthBar.SetMaxHealth();
     }
 
-    public bool GetIsAlreadyAttack()
+    public bool GetIsAlreadyAttack01()
     {
         return isAlreadyAttack01;
+    }
+
+    public bool GetIsAlreadyAttack04()
+    {
+        return isAlreadyAttack04;
     }
 
     public void Die()

@@ -7,28 +7,28 @@ using UnityEngine.AI;
 public class MobAI : MonoBehaviour
 {
     // AI Variable
-    private Transform player;
-    private NavMeshAgent agent;
+    private GameObject player;
+    protected NavMeshAgent agent;
 
     [SerializeField] private LayerMask whatIsPlayer, whatIsGround;
 
 
-    private bool alreadyAttack;
-    [SerializeField] private float timeBetweenAttack;
+    protected bool alreadyAttack;
+    [SerializeField] protected float timeBetweenAttack;
 
     private bool isPlayerInSightRange, isPlayerInAttackRange;
     [SerializeField] private float attackRange, sightRange;
-    [SerializeField] private float attackDamage;
+    [SerializeField] protected float attackDamage;
     private bool isDie = false;
 
     //animation variable
-    private Animator animator;
-    private const string IS_WALKING = "IsWalking";
-    private const string IS_DIE = "IsDie";
-    private const string IS_HIT = "IsTakeDamage";
+    protected Animator animator;
+    protected const string IS_WALKING = "IsWalking";
+    protected const string IS_DIE = "IsDie";
+    protected const string IS_HIT = "IsTakeDamage";
 
     //health bar
-    [SerializeField] HealthBar playerHealthBar;
+    [SerializeField] protected HealthBar playerHealthBar;
     public HealthBar mobHealthBar;
 
     //exp
@@ -37,7 +37,7 @@ public class MobAI : MonoBehaviour
     [SerializeField] private int expAmount;
     protected virtual void Awake()
     {
-        player = GameObject.Find("Player").transform;
+        player = GameObject.Find("Player");
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
     }
@@ -56,7 +56,7 @@ public class MobAI : MonoBehaviour
         isPlayerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         isPlayerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        if (!isDie)
+        if (!isDie && player)
         {
             if (isPlayerInSightRange && !isPlayerInAttackRange) ChasingPlayer();
             if (isPlayerInSightRange && isPlayerInAttackRange) AttackingPlayer();
@@ -68,12 +68,12 @@ public class MobAI : MonoBehaviour
 
     private void ChasingPlayer()
     {
-        agent.SetDestination(player.position);
+        agent.SetDestination(player.transform.position);
         animator.SetBool(IS_WALKING, true);
 
         //calculate mob look to player
         float changeRotationSmooth = 8f;
-        Vector3 direction = (player.position - transform.position).normalized;
+        Vector3 direction = (player.transform.position - transform.position).normalized;
         if (direction != Vector3.zero)
         {
             Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -82,21 +82,12 @@ public class MobAI : MonoBehaviour
 
     }
 
-    private void AttackingPlayer()
+    protected virtual void AttackingPlayer()
     {
-        agent.SetDestination(transform.position);
-        animator.SetBool(IS_WALKING, false);
 
-        //attack handle
-        if (!alreadyAttack)
-        {
-            alreadyAttack = true;
-            playerHealthBar.takeDamage(attackDamage);
-            Invoke(nameof(ResetAttack), timeBetweenAttack);
-        }
     }
 
-    private void ResetAttack()
+    protected void ResetAttack()
     {
         alreadyAttack = false;
     }
