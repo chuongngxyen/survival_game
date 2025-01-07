@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     private float moveSpeedCurrent;
 
 
-    [SerializeField] private GameObject weapon;
+    [SerializeField] private WeaponController weapon;
     [SerializeField] private float attackHitbox1;
     [SerializeField] private float attackHitbox4;
     [SerializeField] private Vector3  attackSpherePosition1;
@@ -37,6 +37,7 @@ public class Player : MonoBehaviour
     private Animator animator;
     private Rigidbody rb;
 
+    [SerializeField] private SkillController[] skill;
     private const string IS_WALKING = "IsWalking";
     private const string IS_ATTACKING = "IsAttacking";
     private const string IS_JUMPING = "IsJumping";
@@ -74,10 +75,13 @@ public class Player : MonoBehaviour
             Die();
         }
         else{
-            StartCoroutine(HandleAttacking());
-            HandleAnimator();
-            PickUpExp();
-            HandleMovement();
+            if (!GameManager.instance.isPaused)
+            {
+                StartCoroutine(HandleAttacking());
+                HandleAnimator();
+                PickUpExp();
+                HandleMovement();
+            }
         }
     }
 
@@ -92,48 +96,45 @@ public class Player : MonoBehaviour
 
     private IEnumerator HandleAttacking()
     {
-        //skill Q
-        if (playerInput.GetAttackButton() == 1 && !isAlreadyAttack01)
-        {
-            isAlreadyAttack01 = true;
-            HandleSkill("01",
-            (transform.position + transform.forward) + attackSpherePosition1,
-            attackHitbox1);
-            yield return new WaitForSeconds(attackDelay);
-            if (isAlreadyAttack01)
+
+        for (int i = 0; i < skill.Length; i++) {
+            SkillController skillItem = skill[i];
+            if (Input.GetKey(skillItem.keySkill) && !skillItem.getIsAlreadyAttack())
             {
-                isAlreadyAttack01 = false;
+                skillItem.imageCooldown.fillAmount = 1;
+                skillItem.setIsAlreadyAttack(true);
+                switch (skillItem.skillName)
+                {
+                    case "01":
+                        HandleSkill(skillItem.skillName,
+                        (transform.position + transform.forward) + attackSpherePosition1,
+                        attackHitbox1);
+                        break;
+                    case "04":
+                        HandleSkill(skillItem.skillName, transform.position, attackHitbox4);
+                        break;
+                }
+
+                    yield return new WaitForSeconds(skillItem.cooldown);
+                if (skillItem.getIsAlreadyAttack())
+                {
+                    skillItem.setIsAlreadyAttack(false);
+                }
             }
         }
 
-
-        //skill E
-        if (Input.GetKeyDown(KeyCode.E) && !isAlreadyAttack04)
-        {
-            isAlreadyAttack04 = true;
-            HandleSkill("04", transform.position, attackHitbox4);
-            yield return new WaitForSeconds(attackDelay);
-            if (isAlreadyAttack04)
-            {
-                isAlreadyAttack04 = false;
-            }
-        }
     }
 
 
     private void HandleSkill(string skillName, Vector3 position, float hitBoxRadius)
     {
-            animator.SetTrigger(IS_ATTACKING + skillName);
+        animator.SetTrigger(IS_ATTACKING + skillName);
 
-            Collider[] collidersHit = Physics.OverlapSphere(position, hitBoxRadius);
-            WeaponController weaponCtl = weapon.gameObject.GetComponent<WeaponController>();
-            if (weaponCtl != null)
-            {
-                foreach (Collider collider in collidersHit)
-                {
-                    weaponCtl.Attack(collider);
-                }
-            }
+        Collider[] collidersHit = Physics.OverlapSphere(position, hitBoxRadius);
+        foreach (Collider collider in collidersHit)
+        {
+            weapon.Attack(collider);
+        }
 
     }
 

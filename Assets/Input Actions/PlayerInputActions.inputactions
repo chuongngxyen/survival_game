@@ -22,15 +22,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Setting",
-                    "type": "Button",
-                    "id": "035a39b2-41d2-4b6d-bfd9-054d1e714b5f",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -196,17 +187,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "NormalAttack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ddc242d9-085d-4ea5-be69-b718f37801bc",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "Press",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Setting",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

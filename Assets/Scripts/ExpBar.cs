@@ -31,7 +31,7 @@ public class ExpBar : MonoBehaviour
             expSlider.value = currentExp;
         }
 
-        if(currentExp == maxExp)
+        if(currentExp >= maxExp)
         {
             player.LevelUp();
             currentExp = 0;

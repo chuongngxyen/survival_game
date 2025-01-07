@@ -16,12 +16,12 @@ public class UIManager : MonoBehaviour
 
     private void OpenSettingUI()
     {
-        float value = playerInput.GetSettingButton();
-        if (value == 1f)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             Transform settingsTransform = GameUI.transform.Find("Settings"); ;
             GameObject settingsObject = settingsTransform.gameObject;
-            settingsObject.SetActive(true);
+            GameManager.instance.PauseGame(!GameManager.instance.isPaused);
+            settingsObject.SetActive(!settingsObject.activeSelf);
         }
     }
 }

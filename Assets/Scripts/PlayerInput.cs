@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -24,10 +25,4 @@ public class PlayerInput : MonoBehaviour
         return value;
     }
 
-    public float GetSettingButton()
-    {
-        float value = playerInputActions.Player.Setting.ReadValue<float>();
-        return value;
-
-    }
 }
